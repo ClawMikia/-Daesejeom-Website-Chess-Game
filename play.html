@@ -171,7 +171,7 @@
 
     .page-shell {
       position: relative;
-      padding-right: calc(var(--sidebar-width) + 2rem);
+      padding-top: calc(var(--sidebar-width) + 2rem);
       min-height: 100vh;
     }
 
@@ -184,22 +184,24 @@
     .sidebar {
       position: fixed;
       top: 0;
+      left: 0;
       right: 0;
-      width: var(--sidebar-width);
-      height: 100vh;
-      padding: 1.25rem 1.15rem 1.25rem 1rem;
+      width: 100%;
+      height: auto;
+      padding: 1rem 1.15rem 1rem 1rem;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: flex-start;
       gap: 1rem;
       backdrop-filter: blur(18px);
       background:
         linear-gradient(180deg, rgba(8, 10, 18, 0.92), rgba(10, 12, 18, 0.75)),
         radial-gradient(circle at top left, rgba(62, 124, 255, 0.12), transparent 35%),
         radial-gradient(circle at bottom right, rgba(243, 72, 72, 0.1), transparent 30%);
-      border-left: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: -18px 0 34px rgba(0, 0, 0, 0.38);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.38);
       z-index: 30;
-      overflow-y: auto;
+      overflow-y: visible;
     }
 
     .sidebar-card,
@@ -1091,12 +1093,8 @@
     }
 
     @media (max-width: 980px) {
-      .topbar {
-        display: flex;
-      }
-
       .page-shell {
-        padding-right: 0;
+        padding-top: 0;
       }
 
       .content {
@@ -1104,13 +1102,14 @@
       }
 
       .sidebar {
-        width: min(88vw, 360px);
-        transform: translateX(105%);
-        transition: transform 0.25s ease;
+        height: auto;
+        position: relative;
+        flex-wrap: wrap;
       }
 
-      body.menu-open .sidebar {
-        transform: translateX(0);
+      .sidebar .nav-list {
+        flex-direction: row;
+        flex-wrap: wrap;
       }
     }
 
@@ -1159,292 +1158,464 @@
         grid-template-columns: 48px 1fr 1fr;
       }
     }
+
+    /* ── TOP NAVBAR ─────────────────────────────────────────────────────── */
+    .topbar {
+      display: none; /* kept for JS compat */
+    }
+
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      width: 100%;
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      background: rgba(7, 9, 18, 0.88);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.42);
+    }
+
+    .navbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 2.5vw, 2rem);
+      height: 62px;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    /* Brand */
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(246, 208, 103, 0.28), rgba(255, 255, 255, 0.06)),
+        url("./Image Assets/app_icon.png") center / cover no-repeat;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 1px rgba(246, 208, 103, 0.18), 0 8px 20px rgba(0,0,0,0.28);
+      flex-shrink: 0;
+    }
+
+    .nav-brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+    }
+
+    .nav-brand-sub {
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .nav-brand-name {
+      font-size: 0.96rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    /* Divider */
+    .nav-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    /* Nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+      flex: 1 1 auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.42rem;
+      padding: 0.48rem 0.78rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--ink);
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .nav-link.active {
+      color: var(--ink);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.11);
+    }
+
+    .nav-link .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--gold), #fff3ca);
+      box-shadow: 0 0 8px rgba(216, 179, 108, 0.7);
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .nav-link.active .dot,
+    .nav-link:hover .dot {
+      opacity: 1;
+    }
+
+    /* Right section */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      padding: 0.32rem 0.62rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .nav-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .nav-badge-dot.live {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(103, 219, 154, 0.7);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+    /* Sidebar IDs kept for JS compat */
+    .sidebar {
+      display: none !important;
+    }
+
+    /* Page shell (no top padding needed, navbar is sticky) */
+    .page-shell {
+      position: relative;
+      min-height: 100vh;
+      padding-top: 0;
+    }
+
+    /* Hamburger hidden (kept for JS compat) */
+    .hamburger { display: none !important; }
+    .overlay { display: none !important; }
+
+    /* Summary rows in nav used by JS */
+    #sidebarStatus, #sidebarTimer, #sidebarTurn,
+    #sidebarBoard, #sidebarAccent, #sidebarDifficulty {
+      /* values updated by JS, displayed via .nav-badge spans */
+    }
+
+    /* Brand row kept for JS compat */
+    .brand-row { display: none; }
+
+    @media (max-width: 720px) {
+      .nav-brand-text { display: none; }
+      .nav-badge .nav-badge-label { display: none; }
+    }
+
+
+    /* PLAY PAGE – High-intensity red/blue battle theme */
+    :root {
+      --page-accent: #3e7cff;
+    }
+    body::before {
+      background:
+        radial-gradient(circle at 5% 20%, rgba(62, 124, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 92% 18%, rgba(243, 72, 72, 0.20), transparent 24%),
+        radial-gradient(circle at 50% 90%, rgba(246, 208, 103, 0.10), transparent 20%);
+    }
+    .top-navbar {
+      border-bottom-color: rgba(62, 124, 255, 0.18);
+      background: rgba(5, 7, 16, 0.92);
+    }
+    .nav-link.active { border-color: rgba(62, 124, 255, 0.35); background: rgba(62, 124, 255, 0.1); color: var(--ink); }
+    .section-kicker { color: #3e7cff; }
+    .play-panel { border-color: rgba(62, 124, 255, 0.14); }
+    .board-topbar { border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.8rem; margin-bottom: 1rem; }
+    .timer-display { color: #3e7cff; }
+    .status-banner { border-color: rgba(62, 124, 255, 0.15); }
+    .side-card:first-child { border-color: rgba(62,124,255,0.2); }
+    .side-card:last-child { border-color: rgba(243,72,72,0.2); }
+    
+
+    /* ── PLAY PAGE LAYOUT ────────────────────────────────── */
+    .play-content { max-width: none !important; padding-inline: 0 !important; }
+
+    .play-page-header {
+      max-width: 1600px; margin: 0 auto;
+      padding: 1.8rem clamp(1rem,2.5vw,2.2rem) 1.2rem;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .play-page-title {
+      margin: 0.3rem 0 0; font-size: clamp(1.8rem,3.5vw,3rem);
+      letter-spacing: -0.03em; line-height: 1.1;
+    }
+
+    .play-wide-wrap {
+      width: 100%;
+      padding: 1.4rem clamp(0.8rem,2vw,2rem) 3rem;
+    }
+    .play-wide-inner {
+      max-width: 1600px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0,1.9fr) minmax(280px,0.55fr);
+      gap: 1.2rem; align-items: start;
+    }
+
+    .play-board-col { min-width: 0; }
+    .play-board-panel {
+      padding: 1.2rem 1.4rem 1.4rem;
+    }
+    .play-info-col { display: grid; gap: 1rem; }
+
+    /* Override board-shell to go full width of its panel */
+    .play-board-panel .board-shell {
+      width: 100%; max-width: none;
+    }
+
+    @media (max-width: 1100px) {
+      .play-wide-inner { grid-template-columns: 1fr; }
+      .play-board-panel .board-shell { max-width: min(100%, 720px); }
+    }
+    @media (max-width: 640px) {
+      .play-page-header { flex-direction: column; align-items: flex-start; }
+    }
+
   </style>
+
 </head>
 <body>
-  <div class="topbar">
+  <!-- Hidden sidebar kept for JS compat -->
+  <div class="topbar" style="display:none;" aria-hidden="true">
     <div class="brand-row">
-      <div class="brand-icon" aria-hidden="true"></div>
+      <div class="brand-icon"></div>
       <div class="brand-copy">
         <p class="eyebrow">Dark Hall Strategy</p>
         <h1 class="title">Daesejeom Chess Hall</h1>
       </div>
     </div>
-    <button class="hamburger" id="hamburgerButton" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">
-      <span></span>
-    </button>
+    <button class="hamburger" id="hamburgerButton" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar"><span></span></button>
   </div>
 
-  <div class="overlay" id="menuOverlay"></div>
+  <div class="overlay" id="menuOverlay" aria-hidden="true"></div>
+
+  <!-- Ghost sidebar kept for JS compat — all IDs present, visually hidden -->
+  <nav class="sidebar" id="sidebar" aria-hidden="true">
+    <div class="sidebar-card">
+      <div class="brand-row"><div class="brand-icon"></div><div class="brand-copy"><p class="eyebrow"></p><h2 class="title"></h2></div></div>
+      <div class="nav-list">
+        <a class="nav-link" href="home.html"><span>Home</span><span class="dot"></span></a>
+        <a class="nav-link" href="about.html"><span>About</span><span class="dot"></span></a>
+        <a class="nav-link" href="how-to-play.html"><span>How to Play</span><span class="dot"></span></a>
+        <a class="nav-link" href="setup.html"><span>Setup</span><span class="dot"></span></a>
+        <a class="nav-link" href="play.html"><span>Play</span><span class="dot"></span></a>
+        <a class="nav-link" href="index.html"><span>Single-page</span><span class="dot"></span></a>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="summary-row"><div class="summary-label">Status</div><div class="summary-value" id="sidebarStatus_ghost">Awaiting setup</div></div>
+      <div class="summary-row"><div class="summary-label">Timer</div><div class="summary-value" id="sidebarTimer_ghost">00:00</div></div>
+      <div class="summary-row"><div class="summary-label">Turn</div><div class="summary-value" id="sidebarTurn_ghost">White to move</div></div>
+    </div>
+  </nav>
+
+  <!-- ── REAL TOP NAVBAR ─────────────────────────────────────────────────── -->
+  <header class="top-navbar" role="banner">
+    <div class="navbar-inner">
+      <a class="nav-brand" href="home.html" aria-label="Daesejeom Chess Hall Home">
+        <div class="nav-brand-icon" aria-hidden="true"></div>
+        <div class="nav-brand-text">
+          <span class="nav-brand-sub">Dark Hall Strategy</span>
+          <span class="nav-brand-name">Daesejeom</span>
+        </div>
+      </a>
+
+      <div class="nav-divider" aria-hidden="true"></div>
+
+      <nav class="nav-links" aria-label="Main navigation">
+        <a class="nav-link" href="home.html"><span class="dot"></span>Home</a>
+        <a class="nav-link" href="about.html"><span class="dot"></span>About</a>
+        <a class="nav-link" href="how-to-play.html"><span class="dot"></span>How to Play</a>
+        <a class="nav-link" href="setup.html"><span class="dot"></span>Setup</a>
+        <a class="nav-link active" href="play.html"><span class="dot"></span>Play</a>
+        <a class="nav-link" href="index.html"><span class="dot"></span>Single-page</a>
+      </nav>
+
+      <div class="nav-right">
+
+          <!-- Play page: live game status indicators -->
+          <span class="nav-badge" id="navTurnBadge">
+            <span class="nav-badge-dot live" id="navLiveDot" style="background:var(--gold);box-shadow:none;animation:none;"></span>
+            <span id="sidebarTurn" class="nav-badge-label">White to move</span>
+          </span>
+          <span class="nav-badge">
+            <span style="font-size:0.7rem;opacity:0.7;margin-right:2px;">⏱</span>
+            <span id="sidebarTimer" class="nav-badge-label">00:00</span>
+          </span>
+          <span class="nav-badge" style="display:none;" id="navStatusBadge">
+            <span class="nav-badge-dot live"></span>
+            <span id="sidebarStatus" class="nav-badge-label">Awaiting setup</span>
+          </span>
+      </div>
+    </div>
+  </header>
 
   <div class="page-shell">
-    <main class="content">
-      <section class="section hero glass-panel" id="home">
-        <div class="hero-copy">
-          <div class="section-kicker">Korean-Inspired Duel Chamber</div>
-          <h2 class="headline">Command the board.<span>Outplay the machine.</span></h2>
-          <p>
-            Daesejeom Chess Hall is a single-file, cinematic chess arena built for direct browser play.
-            Choose your board, hand-pick a full avatar set for every piece type, set your display color,
-            and challenge a CPU that adapts across four named difficulty tiers.
+
+    <main class="content play-content">
+
+  <!-- Minimal page header -->
+  <div class="play-page-header">
+    <div class="play-header-left">
+      <div class="section-kicker">Battlefield</div>
+      <h1 class="play-page-title">The duel begins now.</h1>
+    </div>
+    <div class="play-header-right">
+      <a class="btn btn-secondary" href="setup.html">← Back to Setup</a>
+    </div>
+  </div>
+
+  <!-- Wide board wrapper — breaks out of content max-width -->
+  <div class="play-wide-wrap">
+
+    <div class="play-wide-inner">
+
+      <!-- Board column -->
+      <div class="play-board-col">
+        <div class="play-panel play-board-panel">
+          <div class="board-topbar">
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div class="status-banner" id="statusBanner">Configure your army, then begin the match.</div>
+          </div>
+
+          <div class="board-shell" id="boardShell" aria-label="Chess board">
+            <img class="board-art" id="boardImage" src="./Image Assets/Boards/Board1.png" alt="Selected chess board" />
+            <div class="board-grid-surface" id="boardGridSurface"></div>
+          </div>
+
+          <div class="controls">
+            <button class="btn btn-secondary" id="rematchButton">Rematch</button>
+            <button class="btn btn-ghost" id="resetButton">Reset Board</button>
+          </div>
+          <p class="footer-note">
+            Click a piece to reveal legal targets. Captures, check, checkmate, stalemate, castling,
+            en passant, and queen promotion are handled in-browser.
           </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="setup.html">Forge Your Army</a>
-            <a class="btn btn-secondary" href="play.html">Jump to Board</a>
-            <a class="btn btn-ghost" href="index.html">Switch to single-page mode</a>
-          </div>
-          <div class="hero-stat-grid">
-            <div class="stat-card">
-              <div class="stat-number">25</div>
-              <div class="muted">Board skins sourced directly from the provided collection.</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">6 x 4</div>
-              <div class="muted">Independent avatar choices for king, queen, rook, bishop, knight, and pawn.</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">CPU</div>
-              <div class="muted">Real legal chess rules with random, tactical, and minimax-backed difficulty behavior.</div>
-            </div>
-          </div>
-        </div>
-        <div class="art-panel glass-panel">
-          <div class="art-stack">
-            <div class="hero-board" aria-hidden="true"></div>
-            <div class="hero-piece king" aria-hidden="true"></div>
-            <div class="hero-piece queen" aria-hidden="true"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section glass-panel prose" id="about">
-        <div class="section-kicker">About</div>
-        <h2 class="section-heading">A lacquered strategy room with real play underneath.</h2>
-        <p class="section-subtitle">
-          The experience uses the supplied background, boards, and chess piece artwork only by reference.
-          The presentation leans into dark gloss, red-blue-gold lighting, and premium game-room framing,
-          while the underlying JavaScript handles legal move generation, check detection, castling, en passant,
-          promotion to queen, move logging, captures, timer updates, and CPU response.
-        </p>
-        <div class="feature-grid">
-          <div class="feature-card">
-            <h3>Responsive right sidebar</h3>
-            <p>Desktop keeps a fixed right rail with navigation and live match summary. Mobile shifts it into a hamburger drawer.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Custom visual identity</h3>
-            <p>Player color selection changes live accent styling, summary cards, and the in-board piece glow without replacing the source art.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Standalone offline file</h3>
-            <p>Everything is contained in one browser-ready HTML document with inline CSS and inline JavaScript.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section glass-panel prose" id="how-to-play">
-        <div class="section-kicker">How to Play</div>
-        <h2 class="section-heading">Set your court, then move by click and response.</h2>
-        <div class="info-grid">
-          <div class="info-card">
-            <h3>1. Configure</h3>
-            <p>Select a board frame, choose one avatar variant for each chess piece type, and pick your display color and difficulty.</p>
-          </div>
-          <div class="info-card">
-            <h3>2. Start the duel</h3>
-            <p>The CPU rolls its own random avatar variants and a different accent color, then the initial chess position loads on the chosen board.</p>
-          </div>
-          <div class="info-card">
-            <h3>3. Play on the board</h3>
-            <p>Click one of your pieces, review the legal targets, and click a destination square. The CPU answers automatically after your move.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section glass-panel" id="setup">
-        <div class="section-kicker">Preparation</div>
-        <h2 class="section-heading">Select chess piece avatar and boards</h2>
-        <p class="section-subtitle">
-          Every selection updates the live summary before you begin.
-          The board and avatar choices are applied in the actual board rendering, not only in the setup view.
-        </p>
-        <div class="setup-grid">
-          <div class="setup-stack">
-            <div class="setup-card">
-              <h3>Choose your board</h3>
-              <div class="board-selector" id="boardSelector"></div>
-            </div>
-
-            <div class="setup-card">
-              <h3>Select your avatar variants</h3>
-              <div class="piece-selector" id="pieceSelector"></div>
-            </div>
-
-            <div class="setup-card">
-              <h3>Display color</h3>
-              <div class="color-grid" id="colorGrid"></div>
-            </div>
-
-            <div class="setup-card">
-              <h3>Difficulty</h3>
-              <div class="difficulty-grid" id="difficultyGrid"></div>
-            </div>
-          </div>
-
-          <div class="setup-summary">
-            <div class="setup-card">
-              <div class="duel-banner">
-                <div>
-                  <div class="badge">Home</div>
-                  <strong id="summaryDifficulty">Gae-teol (개털) (Easy)</strong>
-                </div>
-                <button class="btn btn-primary" id="startGameButton">Start playing against the CPU</button>
-              </div>
-            </div>
-
-            <div class="setup-card">
-              <h3>Player setup</h3>
-              <div class="summary-grid">
-                <div class="summary-row">
-                  <div class="summary-label">Board</div>
-                  <div class="summary-value" id="summaryBoard">Board 1</div>
-                </div>
-                <div class="summary-row">
-                  <div class="summary-label">Accent color</div>
-                  <div class="summary-value" id="summaryColor">Blue</div>
-                </div>
-                <div class="summary-row">
-                  <div class="summary-label">Piece variants</div>
-                  <div class="summary-piece-row" id="summaryPieceRow"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="setup-card">
-              <h3>What the CPU does</h3>
-              <p class="muted">
-                The CPU chooses a random piece variant for each type and a random accent color that is always different from yours.
-                Easy plays loosely, normal plays with short tactical greed, hard searches deeper, and expert looks farther ahead.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section glass-panel" id="play">
-        <div class="section-kicker">Battlefield</div>
-        <h2 class="section-heading">Start playing against the CPU</h2>
-        <p class="section-subtitle">
-          Your side always begins from the bottom as white for readability. Decorative accent colors can be customized without changing legal side ownership.
-        </p>
-        <div class="play-grid-layout">
-          <div class="play-panel">
-            <div class="board-topbar">
-              <div class="timer-display" id="timerDisplay">00:00</div>
-              <div class="status-banner" id="statusBanner">Configure your army, then begin the match.</div>
-            </div>
-
-            <div class="board-shell" id="boardShell" aria-label="Chess board">
-              <img class="board-art" id="boardImage" src="./Image Assets/Boards/Board1.png" alt="Selected chess board" />
-              <div class="board-grid-surface" id="boardGridSurface"></div>
-            </div>
-
-            <div class="controls">
-              <button class="btn btn-secondary" id="rematchButton">Rematch</button>
-              <button class="btn btn-ghost" id="resetButton">Reset Board</button>
-              <a class="btn btn-ghost" href="setup.html">Back to setup</a>
-            </div>
-            <p class="footer-note">
-              Click one of your pieces to reveal legal targets. Captures, check, checkmate, stalemate, castling, en passant, and queen promotion are handled in-browser.
-            </p>
-          </div>
-
-          <div class="play-panel">
-            <div class="side-cards">
-              <div class="side-card">
-                <h4>Player side</h4>
-                <div class="summary-value" id="playerSideLabel">White · Blue</div>
-                <div class="muted" id="playerSetupLabel">Board 1 · Gae-teol (개털) (Easy)</div>
-              </div>
-              <div class="side-card">
-                <h4>CPU side</h4>
-                <div class="summary-value" id="cpuSideLabel">Black · Red</div>
-                <div class="muted" id="cpuSetupLabel">Variants randomized on start</div>
-              </div>
-            </div>
-
-            <div class="captured-block">
-              <h4>Captured by player</h4>
-              <div class="captured-grid" id="capturedByPlayer"></div>
-            </div>
-
-            <div class="captured-block">
-              <h4>Captured by CPU</h4>
-              <div class="captured-grid" id="capturedByCpu"></div>
-            </div>
-
-            <h3>Move log</h3>
-            <div class="move-log" id="moveLog"></div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <aside class="sidebar" id="sidebar" aria-label="Right sidebar">
-      <div class="sidebar-card">
-        <div class="brand-row">
-          <div class="brand-icon" aria-hidden="true"></div>
-          <div class="brand-copy">
-            <p class="eyebrow">Multi-page Match Mode</p>
-            <h2 class="title">Daesejeom Chess Hall</h2>
-          </div>
-        </div>
-        <nav class="nav-list">
-          <a class="nav-link" href="home.html"><span>Home</span><span class="dot"></span></a>
-          <a class="nav-link" href="about.html"><span>About</span><span class="dot"></span></a>
-          <a class="nav-link" href="how-to-play.html"><span>How to Play</span><span class="dot"></span></a>
-          <a class="nav-link" href="setup.html"><span>Select chess piece avatar and boards</span><span class="dot"></span></a>
-          <a class="nav-link" href="play.html"><span>Start playing against the CPU</span><span class="dot"></span></a>
-          <a class="nav-link" href="index.html"><span>Single-page mode</span><span class="dot"></span></a>
-        </nav>
-      </div>
-
-      <div class="sidebar-card">
-        <div class="section-kicker">Live Summary</div>
-        <div class="summary-grid">
-          <div class="summary-row">
-            <div class="summary-label">Current status</div>
-            <div class="summary-value" id="sidebarStatus">Awaiting setup</div>
-          </div>
-          <div class="summary-row">
-            <div class="summary-label">Timer</div>
-            <div class="summary-value" id="sidebarTimer">00:00</div>
-          </div>
-          <div class="summary-row">
-            <div class="summary-label">Turn</div>
-            <div class="summary-value" id="sidebarTurn">White to move</div>
-          </div>
         </div>
       </div>
 
-      <div class="sidebar-card">
-        <div class="section-kicker">Current Picks</div>
-        <div class="summary-grid">
-          <div class="summary-row">
-            <div class="summary-label">Board frame</div>
-            <div class="summary-value" id="sidebarBoard">Board 1</div>
-          </div>
-          <div class="summary-row">
-            <div class="summary-label">Player accent</div>
-            <div class="summary-value" id="sidebarAccent">Blue</div>
-          </div>
-          <div class="summary-row">
-            <div class="summary-label">Difficulty</div>
-            <div class="summary-value" id="sidebarDifficulty">Gae-teol (개털) (Easy)</div>
+      <!-- Info column -->
+      <div class="play-info-col">
+
+        <!-- Player vs CPU -->
+        <div class="play-panel">
+          <div class="side-cards">
+            <div class="side-card">
+              <h4>Player</h4>
+              <div class="summary-value" id="playerSideLabel">White · Blue</div>
+              <div class="muted" id="playerSetupLabel">Board 1 · Easy</div>
+            </div>
+            <div class="side-card">
+              <h4>CPU</h4>
+              <div class="summary-value" id="cpuSideLabel">Black · Red</div>
+              <div class="muted" id="cpuSetupLabel">Variants randomized</div>
+            </div>
           </div>
         </div>
+
+        <!-- Captured pieces -->
+        <div class="play-panel">
+          <div class="captured-block">
+            <h4>Captured by player</h4>
+            <div class="captured-grid" id="capturedByPlayer"></div>
+          </div>
+          <div class="captured-block" style="margin-bottom:0;">
+            <h4>Captured by CPU</h4>
+            <div class="captured-grid" id="capturedByCpu"></div>
+          </div>
+        </div>
+
+        <!-- Move log -->
+        <div class="play-panel">
+          <h3 style="margin:0 0 0.8rem;">Move log</h3>
+          <div class="move-log" id="moveLog"></div>
+        </div>
+
       </div>
-    </aside>
+
+    </div>
+  </div>
+
+  <!-- Hidden JS-required IDs -->
+  <span id="sidebarBoard" style="display:none">Board 1</span>
+  <span id="sidebarAccent" style="display:none">Blue</span>
+  <span id="sidebarDifficulty" style="display:none">Easy</span>
+  <span id="summaryBoard" style="display:none">Board 1</span>
+  <span id="summaryColor" style="display:none">Blue</span>
+  <span id="summaryDifficulty" style="display:none">Easy</span>
+  <div id="boardSelector" style="display:none"></div>
+  <div id="pieceSelector" style="display:none"></div>
+  <div id="colorGrid" style="display:none"></div>
+  <div id="difficultyGrid" style="display:none"></div>
+  <div id="summaryPieceRow" style="display:none"></div>
+  <button id="startGameButton" style="display:none"></button>
+
+</main>
   </div>
 
   <script>
@@ -1679,18 +1850,22 @@
       return DIFFICULTIES.find((difficulty) => difficulty.value === value) || DIFFICULTIES[0];
     }
 
-    function initializeUI() {
-      renderBoardOptions();
-      renderPieceOptions();
-      renderColorOptions();
-      renderDifficultyOptions();
-      createBoardSquares();
-      attachEvents();
-      refreshSetupSummary();
-      renderGame();
-      updateTimerDisplays(0);
-      updateBoardPresentation();
-    }
+function initializeUI() {
+       renderBoardOptions();
+       renderPieceOptions();
+       renderColorOptions();
+       renderDifficultyOptions();
+       createBoardSquares();
+       attachEvents();
+       const hasSetup = loadSetupFromStorage();
+       refreshSetupSummary();
+       renderGame();
+       updateTimerDisplays(0);
+       updateBoardPresentation();
+       if (hasSetup) {
+         startNewMatch();
+       }
+     }
 
     function renderBoardOptions() {
       app.boardSelector.innerHTML = BOARD_IMAGES.map((board) => `
@@ -2012,12 +2187,29 @@
       app.boardGridSurface.innerHTML = squares.join("");
     }
 
-    function startNewMatch() {
-      state.cpuConfig = createCpuConfig();
-      restartWithCurrentConfigs(false);
-      document.documentElement.style.setProperty("--cpu-accent", state.cpuConfig.color.hex);
-      document.getElementById("play").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+function startNewMatch() {
+       state.cpuConfig = createCpuConfig();
+       restartWithCurrentConfigs(false);
+       document.documentElement.style.setProperty("--cpu-accent", state.cpuConfig.color.hex);
+     }
+
+     function loadSetupFromStorage() {
+       const saved = sessionStorage.getItem("chessSetup");
+       if (saved) {
+         try {
+           const data = JSON.parse(saved);
+           state.setup.boardId = data.boardId;
+           state.setup.playerColorName = data.playerColorName;
+           state.setup.difficulty = data.difficulty;
+           state.setup.playerVariants = data.playerVariants;
+           state.cpuConfig = data.cpuConfig;
+           return true;
+         } catch (e) {
+           console.error("Failed to parse saved setup:", e);
+         }
+       }
+       return false;
+     }
 
     function restartWithCurrentConfigs(reRandomizeCpu) {
       if (reRandomizeCpu || !state.cpuConfig) {
@@ -2855,7 +3047,7 @@
           link.classList.add("active");
         }
       });
-      const target = document.getElementById("play");
+      const target = document.getElementById("home");
       if (target) {
         const y = target.getBoundingClientRect().top + window.scrollY - 18;
         window.scrollTo({ top: Math.max(0, y), left: 0, behavior: "auto" });

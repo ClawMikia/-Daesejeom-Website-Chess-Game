@@ -1188,11 +1188,11 @@
             Choose your board, hand-pick a full avatar set for every piece type, set your display color,
             and challenge a CPU that adapts across four named difficulty tiers.
           </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="setup.html">Forge Your Army</a>
-            <a class="btn btn-secondary" href="play.html">Jump to Board</a>
-            <a class="btn btn-ghost" href="index.html">Switch to single-page mode</a>
-          </div>
+<div class="hero-actions">
+             <a class="btn btn-primary" href="setup.html">Forge Your Army</a>
+             <button class="btn btn-secondary" onclick="saveSetupToStorage(); window.location.href='play.html';">Jump to Board</button>
+             <a class="btn btn-ghost" href="index.html">Switch to single-page mode</a>
+           </div>
           <div class="hero-stat-grid">
             <div class="stat-card">
               <div class="stat-number">25</div>
@@ -1399,14 +1399,14 @@
             <h2 class="title">Daesejeom Chess Hall</h2>
           </div>
         </div>
-        <nav class="nav-list">
-          <a class="nav-link" href="home.html"><span>Home</span><span class="dot"></span></a>
-          <a class="nav-link" href="about.html"><span>About</span><span class="dot"></span></a>
-          <a class="nav-link" href="how-to-play.html"><span>How to Play</span><span class="dot"></span></a>
-          <a class="nav-link" href="setup.html"><span>Select chess piece avatar and boards</span><span class="dot"></span></a>
-          <a class="nav-link" href="play.html"><span>Start playing against the CPU</span><span class="dot"></span></a>
-          <a class="nav-link" href="index.html"><span>Single-page mode</span><span class="dot"></span></a>
-        </nav>
+<nav class="nav-list">
+           <a class="nav-link" href="home.html"><span>Home</span><span class="dot"></span></a>
+           <a class="nav-link" href="about.html"><span>About</span><span class="dot"></span></a>
+           <a class="nav-link" href="how-to-play.html"><span>How to Play</span><span class="dot"></span></a>
+           <a class="nav-link" href="setup.html"><span>Select chess piece avatar and boards</span><span class="dot"></span></a>
+           <button class="nav-link" onclick="saveSetupToStorage(); window.location.href='play.html';"><span>Start playing against the CPU</span><span class="dot"></span></button>
+           <a class="nav-link" href="index.html"><span>Single-page mode</span><span class="dot"></span></a>
+         </nav>
       </div>
 
       <div class="sidebar-card">
@@ -2012,12 +2012,30 @@
       app.boardGridSurface.innerHTML = squares.join("");
     }
 
-    function startNewMatch() {
-      state.cpuConfig = createCpuConfig();
-      restartWithCurrentConfigs(false);
-      document.documentElement.style.setProperty("--cpu-accent", state.cpuConfig.color.hex);
-      document.getElementById("play").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+function startNewMatch() {
+       state.cpuConfig = createCpuConfig();
+       saveSetupToStorage();
+       window.location.href = "play.html";
+     }
+
+     function saveSetupToStorage() {
+       const cpuConfig = state.cpuConfig || {
+         color: COLOR_OPTIONS.find((opt) => opt.name !== state.setup.playerColorName) || COLOR_OPTIONS[1],
+         variants: {}
+       };
+       if (Object.keys(cpuConfig.variants).length === 0) {
+         PIECE_TYPE_ORDER.forEach((type) => {
+           cpuConfig.variants[type] = Math.floor(Math.random() * PIECE_ASSETS[type].length);
+         });
+       }
+       sessionStorage.setItem("chessSetup", JSON.stringify({
+         boardId: state.setup.boardId,
+         playerColorName: state.setup.playerColorName,
+         difficulty: state.setup.difficulty,
+         playerVariants: state.setup.playerVariants,
+         cpuConfig: cpuConfig,
+       }));
+     }
 
     function restartWithCurrentConfigs(reRandomizeCpu) {
       if (reRandomizeCpu || !state.cpuConfig) {

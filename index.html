@@ -2016,7 +2016,8 @@
       state.cpuConfig = createCpuConfig();
       restartWithCurrentConfigs(false);
       document.documentElement.style.setProperty("--cpu-accent", state.cpuConfig.color.hex);
-      document.getElementById("play").scrollIntoView({ behavior: "smooth", block: "start" });
+      const playSection = document.getElementById("play");
+      if (playSection) playSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function restartWithCurrentConfigs(reRandomizeCpu) {
