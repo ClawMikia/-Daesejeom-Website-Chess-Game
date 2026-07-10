@@ -1183,6 +1183,10 @@
       opacity: 0.32;
     }
 
+    .piece-token.anim-ghost {
+      filter: drop-shadow(0 18px 16px rgba(0,0,0,0.5));
+    }
+
     .side-cards {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2893,6 +2897,7 @@ function startNewMatch() {
     }
 
     function makeLiveMove(move, fromPlayer) {
+      const movingPiece = state.game.board[move.from.row][move.from.col];
       applyMoveToGame(state.game, move);
       state.game.selected = null;
       state.game.legalTargets = [];
@@ -2901,11 +2906,105 @@ function startNewMatch() {
       state.game.status = moveResult.message;
       state.game.over = moveResult.over;
       state.game.winner = moveResult.winner;
-      renderGame();
 
+      const animPieces = [{ from: move.from, to: move.to, piece: movingPiece }];
+      if (move.castle && move.rookFrom && move.rookTo) {
+        const rook = state.game.board[move.rookTo.row][move.rookTo.col];
+        if (rook) animPieces.push({ from: move.rookFrom, to: move.rookTo, piece: rook });
+      }
+
+      const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reducedMotion) {
+        renderGame();
+        afterMoveAnim(fromPlayer);
+        return;
+      }
+
+      renderGameAnimated(animPieces, () => afterMoveAnim(fromPlayer));
+    }
+
+    function afterMoveAnim(fromPlayer) {
       if (!state.game.over && state.game.turn === "b" && fromPlayer) {
         queueCpuMove();
       }
+    }
+
+    function squareEl(row, col) {
+      return app.boardGridSurface.children[row * 8 + col];
+    }
+
+    function getSquareRect(row, col) {
+      const element = squareEl(row, col);
+      const elementRect = element.getBoundingClientRect();
+      const shellRect = app.boardShell.getBoundingClientRect();
+      return {
+        left: elementRect.left - shellRect.left,
+        top: elementRect.top - shellRect.top,
+        width: elementRect.width,
+        height: elementRect.height,
+      };
+    }
+
+    function buildGhost(piece, rect) {
+      const ghost = document.createElement("div");
+      ghost.className = `piece-token anim-ghost ${piece.color === "w" ? "player-piece" : "cpu-piece"}`;
+      ghost.style.position = "absolute";
+      ghost.style.left = `${rect.left}px`;
+      ghost.style.top = `${rect.top}px`;
+      ghost.style.width = `${rect.width}px`;
+      ghost.style.height = `${rect.height}px`;
+      ghost.style.zIndex = "50";
+      ghost.style.pointerEvents = "none";
+      ghost.style.willChange = "transform";
+      const token = buildPieceToken(piece);
+      while (token.firstChild) ghost.appendChild(token.firstChild);
+      return ghost;
+    }
+
+    function renderGameAnimated(animPieces, onDone) {
+      renderGame();
+      if (!animPieces.length) {
+        if (onDone) onDone();
+        return;
+      }
+
+      const squares = Array.from(app.boardGridSurface.children);
+      let pending = animPieces.length;
+
+      const finishOne = () => {
+        pending -= 1;
+        if (pending === 0 && onDone) onDone();
+      };
+
+      animPieces.forEach((entry) => {
+        const destSquare = squares[entry.to.row * 8 + entry.to.col];
+        const destToken = destSquare ? destSquare.querySelector(".piece-token") : null;
+        if (destToken) destToken.style.visibility = "hidden";
+
+        const source = getSquareRect(entry.from.row, entry.from.col);
+        const destination = getSquareRect(entry.to.row, entry.to.col);
+        const ghost = buildGhost(entry.piece, source);
+        app.boardShell.appendChild(ghost);
+
+        const deltaX = destination.left - source.left;
+        const deltaY = destination.top - source.top;
+
+        void ghost.offsetWidth;
+        ghost.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)";
+        ghost.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+        let settled = false;
+        const cleanup = () => {
+          if (settled) return;
+          settled = true;
+          ghost.remove();
+          if (destToken) destToken.style.visibility = "";
+          finishOne();
+        };
+
+        ghost.addEventListener("transitionend", cleanup, { once: true });
+        window.setTimeout(cleanup, 520);
+      });
     }
 
     function queueCpuMove() {
